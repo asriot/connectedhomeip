@@ -48,23 +48,20 @@ guides to get started
 -   Commission light-switch device with node-id `2`
 -   After bridge device and light-switch device successful commissioning, use
     the GUI tool `DOGO` to input AT command `subdevice sync` for the bridge
-    device, and then use chip-tool to write ACL to the endpoint 3 and 4 of
-    bridge device.
+    device, and then use chip-tool to write ACL to the bridge device.
     ```
     ./chip-tool accesscontrol write acl '[{"fabricIndex": 1, "privilege": 5, "authMode": 2, "subjects": [112233], "targets": null },{"fabricIndex": 1, "privilege": 3, "authMode": 2, "subjects": [2], "targets": null }]' 1 0
     ```
 -   After successful commissioning, use the `chip-tool` for binding
-    light-switch's endpoint 1,2 with bridge device's endpoint 3,4 respectively.
+    light-switch's endpoint 1 with bridge device's endpoint 3 respectively.
     ```
     ./chip-tool binding write binding '[{"fabricIndex": 1, "node":1, "endpoint":3, "cluster":6}]' 2 1
-    ./chip-tool binding write binding '[{"fabricIndex": 1, "node":1, "endpoint":4, "cluster":6}]' 2 2
     ```
 -   Light switch button
 
-    This demo uses buttons to test changing the `Light1` and `Light1` , and the
-    bridge device will output log information:
+    This demo uses button to test changing the `Light1`, and the bridge device
+    will output log information:
 
     |  Name   | Pin  |
     | :-----: | :--: |
-    | BUTTON1 | PAD6 |
-    | BUTTON2 | PAD7 |
+    | BUTTON  | PAD6 |

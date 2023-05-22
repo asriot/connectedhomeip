@@ -41,7 +41,6 @@ asr_sdk_sources("light_switch_app_sdk_sources") {
   ]
 
   defines = [
-    #"BOARD_ID=${asr_board}",
     "ASR_LOG_ENABLED=1",
     "CHIP_DEVICE_CONFIG_USE_TEST_SETUP_PIN_CODE=${setupPinCode}",
     "CHIP_DEVICE_CONFIG_USE_TEST_SETUP_DISCRIMINATOR=${setupDiscriminator}",

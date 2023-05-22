@@ -36,5 +36,5 @@ After successful commissioning, use `chip-tool` to control the board
 For example,read temperature sensor measured value:
 
 ```
-./chip-tool temperaturemeasurement read measured-value 1 1
+./chip-tool temperaturemeasurement read measured-value <NODE ID> 1
 ```
