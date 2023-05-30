@@ -1,51 +1,83 @@
-# ASR_matter_factory_tool
+# ASR Matter factory tool
 
-## 编译
+This tool is designed to generate factory partitions for mass production.
 
-1、将src/platform/BUILD.gn中的chip_use_transitional_commissionable_data_provider改为false
+## Dependencies
 
-2、在third_party/asr/BUILD.gn中，定义CONFIG_ENABLE_ASR_FACTORY_DATA_PROVIDER=1
+Please make sure you have had the following tools before using the generator
+tool.
 
-3、src/platform/ASR/CHIPDevicePlatformConfig.h 中找到CHIP_DEVICE_CONFIG_DEVICE_VENDOR_ID以及CHIP_DEVICE_CONFIG_DEVICE_PRODUCT_ID，设置PID和VID
+* [CHIP Tool](https://github.com/project-chip/connectedhomeip/blob/master/examples/chip-tool)
 
-## 环境
+* [SPAKE2P Parameters Tool](https://github.com/project-chip/connectedhomeip/tree/master/scripts/tools/spake2p)
 
-1、请在编译docker下进行如下操作
+### [Build and setup tools in Matter SDK](https://github.com/project-chip/connectedhomeip/blob/master/docs/guides/BUILDING.md#build-for-the-host-os-linux-or-macos)
 
-2、python3 -m pip install -r requirements.txt
+#### Build tools
 
-3、export PATH="$PATH:/workspace/connectedhomeip/asr_factory/tool"
+Using the following commands to generate chip-tool, spake2p and chip-cert at
+    `path/to/connectedhomeip/build/out/host`.
 
-## 使用参考：
+```
+cd path/to/connectedhomeip
+source scripts/activate.sh
+gn gen build/out/host
+ninja -C build/out/host
+```
 
-./ASR_matter_factory_tool -d 3434 -p 99663300 --dac-cert  ../credentials/test/attestation/Chip-Test-DAC-FFF2-8001-0008-Cert.pem --dac-key  ../credentials/test/attestation/Chip-Test-DAC-FFF2-8001-0008-Key.pem --pai-cert  ../credentials/test/attestation/Chip-Test-PAI-FFF2-8001-Cert.der --cd  ../credentials/test/certification-declaration/Chip-Test-CD-FFF2-8001.der
+#### Add the tools path to $PATH
 
-参数如下：
+```
+export PATH="$PATH:path/to/connectedhomeip/build/out/host"
+```
 
-VID: 0xFFF2
-PID: 8001
-discriminator: 3434
-pincode: 99663300
+### Install python dependencies
+```
+cd path/to/Tools/factory_tool
+python3 -m pip install -r requirements.txt
+```
 
-可选参数：
+## Build Matter App
 
---nokey: 将DAC private key独立为一个bin
+To build the Matter App with the ASR Factory Data Provider.
 
---out: 指定生成文件的输出目录
+If you use the `build_examples.py` script, add argument `-factory`.
+For example:
+```
+./scripts/build/build_examples.py --target asr-$ASR_BOARD-lighting-factory build
+```
 
---qrcode： 按输入参数生成QR code 和 manual code，并生成二维码文件
+If you use the `matter_build_example.sh` script, add argument`chip_enable_factory_data=true` and
+`chip_use_transitional_commissionable_data_provider=false`
+For example:
+```
+./matter_build_example.sh ./examples/lighting-app/asr out/example_app chip_enable_factory_data=true chip_use_transitional_commissionable_data_provider=false
+```
 
-以下需要定义宏 CONFIG_ENABLE_ASR_FACTORY_DEVICE_INFO_PROVIDER=1
+## Usage
 
---vendor-id 0x133F
---vendor-name ASR
---product-id 0x5821
---product-name asr5821
+`./ASR_matter_factory_tool -h` lists all the optional arguments.
 
-## 烧录
+The following commands generate factory partitions using the default testing PAI
+keys, certificates, and CD in Matter project, Vendor ID: 0xFFF2, Product ID: 0x8001,
+Discriminator: 3434, and Passcode: 99663300.
+You can make it using yours instead in real production.
 
-执行如上命令后会生成ASR_matter_factory.bin，需要将其烧录至Flash
+```
+./ASR_matter_factory_tool --discriminator 3434 --passcode 99663300 \
+--dac-cert  ../credentials/test/attestation/Chip-Test-DAC-FFF2-8001-0008-Cert.pem \
+--dac-key  ../credentials/test/attestation/Chip-Test-DAC-FFF2-8001-0008-Key.pem \
+--pai-cert  ../credentials/test/attestation/Chip-Test-PAI-FFF2-8001-Cert.der \
+--cd  ../credentials/test/certification-declaration/Chip-Test-CD-FFF2-8001.der \
+--vendor-id 0xFFF2 --vendor-name ASR --product-id 0x8001 --product-name asr5821
+```
 
-ASR582X地址：0x101C1000
+The output manufacturing binary file is `ASR_matter_factory.bin`.
 
-ASR595X地址：0x801C1000
+## Flashing the manufacturing binary
+
+`DOGO` tool is used to flash the manufacturing binary to the board.
+
+For ASR582X, the burning address is `0x101C1000`.
+
+For ASR595X, the burning address is `0x801C1000`.

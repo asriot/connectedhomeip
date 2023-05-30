@@ -14,6 +14,7 @@ platform that uses ASR FreeRTOS SDK.
         -   [IP mode](#ip-mode)
     -   [Shell](#shell)
     -   [OTA](#ota)
+    -   [Factory](#factory)
 
 ---
 
@@ -41,11 +42,12 @@ to speed up development:
 
 ## Building the Example Application
 
--   [Setup CHIP Environment](./BUILDING.md)
+-   [Setup Matter Environment](./BUILDING.md)
 
 -   Setup toolchain
     -   for ASR582X
         ```
+        cd toolchain
         wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2019q4/RC2.1/gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
         tar -jxvf gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
         export ASR_TOOLCHAIN_PATH={abs-path-to-toolchain}/gcc-arm-none-eabi-9-2019-q4-major/bin/
@@ -114,9 +116,8 @@ There are two commissioning modes supported by ASR platform:
 
 ## Shell
 
-1. Build and Flash To build the example with Matter shell,exactly the same steps
-   as above but add argument `-shell` when using the `build_examples.py` script.
-   For example:
+1. To build the example with Matter shell, exactly the same steps as above but
+   add argument `-shell` when using the `build_examples.py` script. For example:
    `./scripts/build/build_examples.py --target asr-$ASR_BOARD-lighting-shell build`
 2. The example will run automatically after booting the ASR board.
 3. Use `help` command to list all supported commands:
@@ -138,9 +139,18 @@ There are two commissioning modes supported by ASR platform:
 
 ## OTA
 
-1. Build and Flash To build the example with Matter shell,exactly the same steps
-   as above but add argument `-ota` when using the `build_examples.py` script.
-   For example:
+1. To build the example with the Matter OTA Requestor functionality, exactly the
+   same steps as above but add argument `-ota` when using the
+   `build_examples.py` script. For example:
    `./scripts/build/build_examples.py --target asr-$ASR_BOARD-lighting-ota build`
-2. For more usage details,please refer to the
+2. For more usage details, please refer to the
    [OTA example](../../examples/ota-requestor-app/asr/README.md)
+
+## Factory
+
+1. To build the example with the ASR Factory Data Provider, exactly the same steps
+   as above but add argument `-factory` when using the `build_examples.py` script.
+   For example:
+   `./scripts/build/build_examples.py --target asr-$ASR_BOARD-lighting-factory build`
+2. For more usage details, please refer to the
+   [ASR factory tool](../../asr_factory/ASR_FACTORY_TOOL.md)
