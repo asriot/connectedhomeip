@@ -298,8 +298,7 @@ void ASRWiFiDriver::OnNetworkStatusChange()
     if (staConnected)
     {
         mpStatusChangeCallback->OnNetworkingStatusChange(
-            Status::kSuccess, MakeOptional(ByteSpan(configuredNetwork.networkID, configuredNetwork.networkIDLen)),
-            MakeOptional(GetLastDisconnectReason()));
+            Status::kSuccess, MakeOptional(ByteSpan(configuredNetwork.networkID, configuredNetwork.networkIDLen)), NullOptional);
         return;
     }
     mpStatusChangeCallback->OnNetworkingStatusChange(
