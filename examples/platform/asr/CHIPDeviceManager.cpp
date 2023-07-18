@@ -31,6 +31,10 @@
 #include <support/CodeUtils.h>
 #include <support/ErrorStr.h>
 
+#ifdef EMBER_AF_PLUGIN_IDENTIFY_SERVER
+#include <app/clusters/identify-server/identify-server.h>
+#endif
+
 using namespace ::chip;
 
 namespace chip {
@@ -74,3 +78,42 @@ void MatterPostAttributeChangeCallback(const chip::app::ConcreteAttributePath & 
         cb->PostAttributeChangeCallback(path.mEndpointId, path.mClusterId, path.mAttributeId, type, size, value);
     }
 }
+
+#ifdef EMBER_AF_PLUGIN_IDENTIFY_SERVER
+void OnIdentifyStart(Identify *)
+{
+    ChipLogProgress(Zcl, "OnIdentifyStart");
+}
+
+void OnIdentifyStop(Identify *)
+{
+    ChipLogProgress(Zcl, "OnIdentifyStop");
+}
+
+void OnTriggerEffect(Identify * identify)
+{
+    switch (identify->mCurrentEffectIdentifier)
+    {
+    case EMBER_ZCL_IDENTIFY_EFFECT_IDENTIFIER_BLINK:
+        ChipLogProgress(Zcl, "EMBER_ZCL_IDENTIFY_EFFECT_IDENTIFIER_BLINK");
+        break;
+    case EMBER_ZCL_IDENTIFY_EFFECT_IDENTIFIER_BREATHE:
+        ChipLogProgress(Zcl, "EMBER_ZCL_IDENTIFY_EFFECT_IDENTIFIER_BREATHE");
+        break;
+    case EMBER_ZCL_IDENTIFY_EFFECT_IDENTIFIER_OKAY:
+        ChipLogProgress(Zcl, "EMBER_ZCL_IDENTIFY_EFFECT_IDENTIFIER_OKAY");
+        break;
+    case EMBER_ZCL_IDENTIFY_EFFECT_IDENTIFIER_CHANNEL_CHANGE:
+        ChipLogProgress(Zcl, "EMBER_ZCL_IDENTIFY_EFFECT_IDENTIFIER_CHANNEL_CHANGE");
+        break;
+    default:
+        ChipLogProgress(Zcl, "No identifier effect");
+        return;
+    }
+}
+
+static Identify gIdentify1 = {
+    chip::EndpointId{ 1 }, OnIdentifyStart, OnIdentifyStop, EMBER_ZCL_IDENTIFY_IDENTIFY_TYPE_VISIBLE_LED, OnTriggerEffect,
+};
+#endif
+
