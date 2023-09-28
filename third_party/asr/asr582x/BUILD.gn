@@ -19,6 +19,8 @@ import("${chip_root}/src/platform/ASR/args.gni")
 declare_args() {
   # Build target to use for asr SDK. Use this to set global SDK defines.
   asr_target_project = ""
+  # Must be "4M" or "2M". For matter, ASR582X use 4M flash default.
+  asr_flash_max_size = "4M"
 }
 
 assert(asr_target_project != "", "asr_target_project must be specified")
@@ -126,7 +128,6 @@ config("asr_sdk_config") {
     "CONFIG_IEEE80211W",
     "WFA_CERTIFICATE_N",
     "CFG_DUET_5822S",
-    "CFG_DUET_5822T",
     "MBEDTLS_HW",
     "MBEDTLS_HW_RSA",
     "MBEDTLS_HW_ECC",
@@ -138,12 +139,22 @@ config("asr_sdk_config") {
     "CFG_EASY_LOG_MODULE_EN=1",
   ]
 
+  if (asr_flash_max_size == "2M") {
+    defines += [ "_OTA_CMP_VENDOR_" ]
+  }
+  else {
+    defines += [ "CFG_DUET_5822T" ]
+  }
+
   cflags_c = [
     "-mcpu=cortex-m4",
     "-Os",
     "-mfloat-abi=softfp",
     "-mfpu=fpv4-sp-d16",
     "-mthumb",
+    "-fno-builtin-printf",
+    "-fno-builtin-sprintf",
+    "-fno-builtin-snprintf",
     "-ffunction-sections",
     "-fdata-sections",
     "-g",
@@ -163,7 +174,12 @@ config("asr_sdk_config") {
     "-Wno-type-limits",
   ]
 
-  ldflags += [ "-Wl,--gc-sections" ]
+  ldflags += [
+    "-Wl,--wrap=printf",
+    "-Wl,--wrap=sprintf",
+    "-Wl,--wrap=snprintf",
+    "-Wl,--gc-sections",
+  ]
 
   libs = [
     "${chip_root}/third_party/asr/${asr_ic_family}/asr_sdk/lib/5822s/libasr_combo_v6.a",

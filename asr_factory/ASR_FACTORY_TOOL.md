@@ -78,6 +78,8 @@ The output manufacturing binary file is `ASR_matter_factory.bin`.
 
 `DOGO` tool is used to flash the manufacturing binary to the board.
 
-For ASR582X, the burning address is `0x101C1000`.
+For ASR582X(4M), the burning address is `0x101C1000`.
+
+For ASR582X(2M), the burning address is `0x101FF000`.
 
 For ASR595X, the burning address is `0x801C1000`.
