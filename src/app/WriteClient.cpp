@@ -243,7 +243,6 @@ CHIP_ERROR WriteClient::PutSinglePreencodedAttributeWritePayload(const chip::app
     {
         // If it failed with no memory, then we create a new chunk for it.
         mWriteRequestBuilder.GetWriteRequests().Rollback(backupWriter);
-        mWriteRequestBuilder.GetWriteRequests().ResetError();
         ReturnErrorOnFailure(StartNewMessage());
         err = TryPutSinglePreencodedAttributeWritePayload(attributePath, data);
         // Since we have created a new chunk for this element, the encode is expected to succeed.
@@ -460,7 +459,7 @@ CHIP_ERROR WriteClient::OnMessageReceived(Messaging::ExchangeContext * apExchang
         if (!mChunks.IsNull())
         {
             // Send the next chunk.
-            SuccessOrExit(SendWriteRequest());
+            SuccessOrExit(err = SendWriteRequest());
         }
     }
     else if (aPayloadHeader.HasMessageType(MsgType::StatusResponse))

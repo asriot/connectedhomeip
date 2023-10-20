@@ -326,7 +326,7 @@ Status CommandHandler::ProcessCommandDataIB(CommandDataIB::Parser & aCommandElem
     {
         ChipLogDetail(DataManagement, "Received command for Endpoint=%u Cluster=" ChipLogFormatMEI " Command=" ChipLogFormatMEI,
                       concretePath.mEndpointId, ChipLogValueMEI(concretePath.mClusterId), ChipLogValueMEI(concretePath.mCommandId));
-        SuccessOrExit(MatterPreCommandReceivedCallback(concretePath, GetSubjectDescriptor()));
+        SuccessOrExit(err = MatterPreCommandReceivedCallback(concretePath, GetSubjectDescriptor()));
         mpCallback->DispatchCommand(*this, concretePath, commandDataReader);
         MatterPostCommandReceivedCallback(concretePath, GetSubjectDescriptor());
     }
@@ -560,7 +560,6 @@ CHIP_ERROR CommandHandler::RollbackResponse()
 {
     VerifyOrReturnError(mState == State::Preparing || mState == State::AddingCommand, CHIP_ERROR_INCORRECT_STATE);
     mInvokeResponseBuilder.Rollback(mBackupWriter);
-    mInvokeResponseBuilder.ResetError();
     // Note: We only support one command per request, so we reset the state to Idle here, need to review the states when adding
     // supports of having multiple requests in the same transaction.
     MoveToState(State::Idle);
