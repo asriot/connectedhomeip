@@ -119,6 +119,14 @@ const matter_partition_t asr_matter_partitions_table[] =
         .partition_name = "part-number",
     },
 #endif
+    [ASR_QR_CODE_PARTITION] =
+    {
+        .partition_name = "qrcode",
+    },
+    [ASR_MANUAL_PAIRING_CODE_PARTITION] =
+    {
+        .partition_name = "manual-code",
+    },
     [ASR_MATTER_PARTITION_MAX] =
     {
         .partition_name = NULL, //for end don't change,

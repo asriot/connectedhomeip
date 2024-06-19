@@ -122,12 +122,7 @@ CHIP_ERROR AppTask::Init()
 
     ConfigurationMgr().LogDeviceConfig();
 
-    // Print setup info
-#if CONFIG_NETWORK_LAYER_BLE
-    PrintOnboardingCodes(chip::RendezvousInformationFlag(chip::RendezvousInformationFlag::kBLE));
-#else
-    PrintOnboardingCodes(chip::RendezvousInformationFlag(chip::RendezvousInformationFlag::kOnNetwork));
-#endif /* CONFIG_NETWORK_LAYER_BLE */
+    MatterInitializer::OutputQrCode();
 
     app::Clusters::TemperatureControl::SetInstance(&sAppSupportedTemperatureLevelsDelegate);
 

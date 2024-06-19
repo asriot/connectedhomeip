@@ -149,12 +149,7 @@ void AppTask::AppTaskMain(void * pvParameter)
 
     ConfigurationMgr().LogDeviceConfig();
 
-    // Print setup info
-#if CONFIG_NETWORK_LAYER_BLE
-    PrintOnboardingCodes(chip::RendezvousInformationFlag(chip::RendezvousInformationFlag::kBLE));
-#else
-    PrintOnboardingCodes(chip::RendezvousInformationFlag(chip::RendezvousInformationFlag::kOnNetwork));
-#endif /* CONFIG_NETWORK_LAYER_BLE */
+    MatterInitializer::OutputQrCode();
 
 #ifdef LIGHT_SELECT_RGB
     lightLED.RGB_init();

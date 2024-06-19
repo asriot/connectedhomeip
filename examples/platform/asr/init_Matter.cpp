@@ -29,6 +29,8 @@
 #include <shell/launch_shell.h>
 #endif
 #include <platform/ASR/ASRFactoryDataProvider.h>
+#include <setup_payload/QRCodeSetupPayloadGenerator.h>
+#include <setup_payload/SetupPayload.h>
 
 using namespace ::chip;
 using namespace ::chip::Inet;
@@ -118,4 +120,51 @@ CHIP_ERROR MatterInitializer::Init_Matter_Server(void)
 #endif
 
     return CHIP_NO_ERROR;
+}
+
+void MatterInitializer::OutputQrCode(void)
+{
+    char payloadBuffer[chip::QRCodeBasicSetupPayloadGenerator::kMaxQRCodeBase38RepresentationLength + 1] = { 0 };
+    chip::MutableCharSpan qrCode(payloadBuffer);
+
+#if !CONFIG_ENABLE_ASR_FACTORY_DATA_PROVIDER
+    chip::PayloadContents payload;
+    chip::RendezvousInformationFlags aRendezvousFlags;
+#if CONFIG_NETWORK_LAYER_BLE
+    aRendezvousFlags = chip::RendezvousInformationFlag(chip::RendezvousInformationFlag::kBLE);
+#else
+    aRendezvousFlags = chip::RendezvousInformationFlag(chip::RendezvousInformationFlag::kOnNetwork);
+#endif /* CONFIG_NETWORK_LAYER_BLE */
+    CHIP_ERROR err = GetPayloadContents(payload, aRendezvousFlags);
+    if (err != CHIP_NO_ERROR)
+    {
+        ASR_LOG("GetPayloadContents() failed: %" CHIP_ERROR_FORMAT, err.Format());
+    }
+
+    if (GetQRCode(qrCode, payload) == CHIP_NO_ERROR)
+#else
+    if (sFactoryDataProvider.GetSetupQRCode(qrCode) == CHIP_NO_ERROR)
+#endif
+    {
+        PrintQrCodeURL(qrCode);
+    }
+    else
+    {
+        ASR_LOG("Getting QR code failed!");
+    }
+
+    memset(payloadBuffer, 0, sizeof(payloadBuffer));
+    chip::MutableCharSpan manualPairingCode(payloadBuffer);
+#if !CONFIG_ENABLE_ASR_FACTORY_DATA_PROVIDER
+    if (GetManualPairingCode(manualPairingCode, payload) == CHIP_NO_ERROR)
+#else
+    if (sFactoryDataProvider.GetSetupManualPairingCode(manualPairingCode) == CHIP_NO_ERROR)
+#endif
+    {
+        ASR_LOG("Manual pairing code: [%s]", manualPairingCode.data());
+    }
+    else
+    {
+        ASR_LOG("Getting manual pairing code failed!");
+    }
 }

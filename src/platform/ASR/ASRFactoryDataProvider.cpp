@@ -21,6 +21,8 @@
 #include <platform/ASR/ASRFactoryDataProvider.h>
 #include <platform/CHIPDeviceConfig.h>
 #include <platform/CHIPDeviceError.h>
+#include <setup_payload/QRCodeSetupPayloadGenerator.h>
+#include <setup_payload/SetupPayload.h>
 
 namespace chip {
 namespace DeviceLayer {
@@ -565,6 +567,36 @@ CHIP_ERROR ASRFactoryDataProvider::GetRotatingDeviceIdUniqueId(MutableByteSpan &
 #endif // CONFIG_ENABLE_ASR_FACTORY_DEVICE_INFO_PROVIDER
 #endif // CHIP_ENABLE_ROTATING_DEVICE_ID
     return err;
+}
+
+CHIP_ERROR ASRFactoryDataProvider::GetSetupQRCode(MutableCharSpan & outBuffer)
+{
+#if CONFIG_ENABLE_ASR_FACTORY_DATA_PROVIDER
+    size_t buffer_len                                  = chip::QRCodeBasicSetupPayloadGenerator::kMaxQRCodeBase38RepresentationLength + 1;
+    uint8_t buffer[chip::QRCodeBasicSetupPayloadGenerator::kMaxQRCodeBase38RepresentationLength + 1] = { 0 };
+    ReturnErrorOnFailure(ASRConfig::ReadFactoryConfigValue(ASR_QR_CODE_PARTITION, buffer, buffer_len, buffer_len));
+    ReturnErrorCodeIf(buffer_len > outBuffer.size(), CHIP_ERROR_BUFFER_TOO_SMALL);
+    memcpy(outBuffer.data(), buffer, buffer_len);
+    outBuffer.reduce_size(buffer_len);
+    return CHIP_NO_ERROR;
+#else
+    return CHIP_DEVICE_ERROR_CONFIG_NOT_FOUND;
+#endif
+}
+
+CHIP_ERROR ASRFactoryDataProvider::GetSetupManualPairingCode(MutableCharSpan & outBuffer)
+{
+#if CONFIG_ENABLE_ASR_FACTORY_DATA_PROVIDER
+    size_t buffer_len                                  = chip::kManualSetupLongCodeCharLength + 1;
+    uint8_t buffer[chip::kManualSetupLongCodeCharLength + 1] = { 0 };
+    ReturnErrorOnFailure(ASRConfig::ReadFactoryConfigValue(ASR_MANUAL_PAIRING_CODE_PARTITION, buffer, buffer_len, buffer_len));
+    ReturnErrorCodeIf(buffer_len > outBuffer.size(), CHIP_ERROR_BUFFER_TOO_SMALL);
+    memcpy(outBuffer.data(), buffer, buffer_len);
+    outBuffer.reduce_size(buffer_len);
+    return CHIP_NO_ERROR;
+#else
+    return CHIP_DEVICE_ERROR_CONFIG_NOT_FOUND;
+#endif
 }
 
 } // namespace DeviceLayer
